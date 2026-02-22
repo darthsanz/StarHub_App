@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap");
+
+/* Aquí pondremos el color de fondo oscuro de StarHub más adelante */
+body {
+  background-color: #050510;
+  color: #ffffff;
+}
+
+@theme {
+  /* Al sobrescribir --font-sans, cambias la fuente por defecto de toda tu app */
+  --font-sans: "Inter", sans-serif;
+}
