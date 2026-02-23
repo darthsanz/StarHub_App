@@ -1,11 +1,15 @@
 import { FaStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const MovieCard = ({ movie }) => {
   // TMDB nos da solo el final de la URL de la imagen, nosotros ponemos el principio
   const imageUrl = `https://image.tmdb.org/t/p/w500${movie.backdrop_path || movie.poster_path}`;
   return (
     // Tarjeta con efecto hover (se levanta un poquito al pasar el mouse)
-    <div className="bg-[#111118] rounded-2xl overflow-hidden shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1 transition-all duration-300 cursor-pointer group">
+    <Link
+      to={`/movie/${movie.id}`}
+      className="bg-[#111118] rounded-2xl overflow-hidden shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+    >
       {/* Contenedor de la Imagen (Horizontal / Aspect Ratio 16:9) */}
       <div className="relative aspect-video overflow-hidden">
         <img
@@ -33,7 +37,7 @@ const MovieCard = ({ movie }) => {
           {movie.release_date?.split("-")[0]}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 export default MovieCard;

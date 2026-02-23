@@ -2,7 +2,7 @@ import { FiSearch } from "react-icons/fi";
 //import { FaStar } from "react-icons/fa";
 import logoImg from "../assets/StarHub_logo.png";
 
-const Navbar = () => {
+const Navbar = ({ onSearch }) => {
   return (
     // Contenedor principal del Navbar (Sticky para que se quede arriba al scrollear)
     <nav className="flex items-center justify-between px-4 py-3 bg-transparent sticky top-0 z-50">
@@ -30,6 +30,7 @@ const Navbar = () => {
           type="text"
           placeholder="Buscar"
           className="bg-white text-black font-regular rounded-full py-3 pl-5 pr-10 outline-none w-32 md:w-64 focus:ring-2 focus:ring-blue-500 transition-all"
+          onChange={(evento) => onSearch(evento.target.value)}
         />
         {/* Ícono de lupa posicionado absolutamente dentro del input */}
         <FiSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-black text-lg" />
