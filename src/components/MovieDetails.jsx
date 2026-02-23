@@ -19,7 +19,7 @@ const MovieDetails = () => {
   if (!movie) {
     return (
       <div className="text-center text-white mt-20 text-2xl">
-        Cargando la magia... 🪄
+        Cargando contenido... 🪄
       </div>
     );
   }
@@ -28,28 +28,28 @@ const MovieDetails = () => {
   const imageUrl = `https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`;
 
   return (
-    <div className="relative min-h[90vh] flex items-center justify-center p-6">
+    <div className="relative min-h-[90vh] flex items-center justify-center p-6 ">
       {/* boton para regresar al inicio */}
       <Link
         to="/"
-        className="absolute top-6 left-6 z-50 text-white bg-black/50 p-3 rounded-full hover:bg-blue-500 transition-colors"
+        className="absolute top-6 left-6 z-40 text-white bg-black/50 p-3 rounded-full hover:bg-blue-500 transition-colors"
       >
         <FaArrowLeft />
       </Link>
 
-      {/* Imagen gigante con fondo con efecto borroso */}
-      <div className="absolute inset-0 z-0">
+      {/* Imagen gigante hasta el fondo con efecto borroso */}
+      <div className="fixed inset-0 -z-10 animation-aparecer">
         <img
           src={imageUrl}
           alt={movie.title}
-          className="w-full h-full object-cover opacity-30 blur-sm"
+          className="w-full h-full object-cover opacity-20 blur-sm"
         />
         {/* degradado para que se vea bien el texto */}
-        <div className="absolute inset-0 bg-linear-to-t from-[#050510] via-[#050510]/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent"></div>
       </div>
 
       {/* contenedor del contenido principal (arriba del fondo) */}
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col md-flex-row items-center gap-10">
+      <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10 animation-aparecer">
         {/* poster nitido ala izq */}
         <img
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -62,12 +62,12 @@ const MovieDetails = () => {
           <h1 className="text-4xl md:text-6xl font font-extrabold mb-4">
             {movie.title}
           </h1>
-
+          {/* Puntuacion estrella */}
           <div className="flex items-center gap-4 text-gray-300 mb-6">
-            <span className="flex-items-center gap-1 bg-black/50 px-3 py-1 rounded-full text-yellow-400 font-bold">
+            <span className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full text-yellow-400 font-bold">
               <FaStar /> {movie.vote_average?.toFixed(1)}
             </span>
-            <span>{movie.realese_date?.split("-")[0]}</span>
+            <span>{movie.release_date?.split("-")[0]}</span>
             <span>{movie.runtime}min</span>
           </div>
 
