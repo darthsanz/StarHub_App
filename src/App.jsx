@@ -3,6 +3,7 @@ import MovieDetails from "./components/MovieDetails";
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import MovieCard from "./components/MovieCard";
+import { SkeletonCard } from "./components/SkeletonCard";
 import { getTrendingMovies } from "./tmdb";
 import { searchMovies } from "./tmdb";
 import { HiTrendingUp } from "react-icons/hi";
@@ -10,26 +11,35 @@ import { HiTrendingUp } from "react-icons/hi";
 function App() {
   // Aquí guardaremos la lista de películas. Empieza como un arreglo vacío [].
   const [movies, setMovies] = useState([]);
+  //Estado para saber si estamos esperando a la API
+  const [isLoading, setIsLoading] = useState(true);
   // Esta función se activará cuando el usuario busque algo en el Navbar
   const handleSearch = async (searchTerm) => {
+    setIsLoading(true); //encendemos la carga al empezar a buscar
     //En caso de que el usuario borre todo traemos de nuevo las tendencias
     if (searchTerm === "") {
       const trending = await getTrendingMovies();
       setMovies(trending);
+      setIsLoading(false); //Apagamos la carga
       return;
     }
     //Si escribe algo usamos la funcion searchmovies
     const resultados = await searchMovies(searchTerm);
     setMovies(resultados); //actualizamos la memoria con los resultados de la busqueda
+    setIsLoading(false); //Apagamos la carga al terminar de escribir
   };
 
   useEffect(() => {
     const fetchMovies = async () => {
+      setIsLoading(true); //Prendemos la carga al entrar ala pagina
       const peliculas = await getTrendingMovies();
       setMovies(peliculas);
+      setIsLoading(false); //Apagamos la carga
     };
     fetchMovies();
   }, []);
+
+  const skeletons = Array(8).fill(0);
 
   return (
     // contenedor principal
@@ -58,9 +68,12 @@ function App() {
                 {/* LA GRILLA MAGICA: 1 columna en móvil, 2 en tablets, 4 en PC */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {/* Por cada película en la memoria, dibujamos un MovieCard */}
-                  {movies.map((pelicula) => (
-                    <MovieCard key={pelicula.id} movie={pelicula} />
-                  ))}
+                  {/* Si esta cargando mostramos skeletons si no las peliculas */}
+                  {isLoading
+                    ? skeletons.map((_, index) => <SkeletonCard key={index} />)
+                    : movies.map((pelicula) => (
+                        <MovieCard key={pelicula.id} movie={pelicula} />
+                      ))}
                 </div>
               </main>
             }
