@@ -3,10 +3,10 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 
 // Esta función irá a buscar las películas que están en tendencia hoy
-export const getTrendingMovies = async () => {
+export const getTrendingMovies = async (page = 1) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=es-MX`,
+      `${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=es-MX=&page=${page}`,
     );
 
     if (!response.ok) {
@@ -21,10 +21,10 @@ export const getTrendingMovies = async () => {
   }
 };
 
-export const searchMovies = async (query) => {
+export const searchMovies = async (query, page = 1) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/search/movie?api_key=${API_KEY}&language=es-MX&query=${query}`,
+      `${BASE_URL}/search/movie?api_key=${API_KEY}&language=es-MX&query=${query}&page=${page}`,
     );
     if (!response.ok) {
       throw new Error("Error al buscar la pelicula");
@@ -33,6 +33,7 @@ export const searchMovies = async (query) => {
     return data.results;
   } catch (error) {
     console.error("Hubo un problema con la busqueda", error);
+    return[]; //devolvemos un arreglo vacio si hay error para no romper la app
   }
 };
 

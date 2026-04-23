@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useRef } from "react";
 import MovieDetails from "./components/MovieDetails";
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
@@ -13,31 +14,75 @@ function App() {
   const [movies, setMovies] = useState([]);
   //Estado para saber si estamos esperando a la API
   const [isLoading, setIsLoading] = useState(true);
-  // Esta función se activará cuando el usuario busque algo en el Navbar
-  const handleSearch = async (searchTerm) => {
-    setIsLoading(true); //encendemos la carga al empezar a buscar
-    //En caso de que el usuario borre todo traemos de nuevo las tendencias
-    if (searchTerm === "") {
-      const trending = await getTrendingMovies();
-      setMovies(trending);
-      setIsLoading(false); //Apagamos la carga
-      return;
-    }
-    //Si escribe algo usamos la funcion searchmovies
-    const resultados = await searchMovies(searchTerm);
-    setMovies(resultados); //actualizamos la memoria con los resultados de la busqueda
-    setIsLoading(false); //Apagamos la carga al terminar de escribir
+
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+  //NUEVOS ESTADOS PARA EL SCROLL INFINITO
+  const [page, setPage] = useState(1);
+  const [currentQuery, setCurrentQuery] = useState("");
+  //Vigilante
+  const vigilanteRef = useRef(null);
+
+  // 1. MANEJADOR DE BÚSQUEDA (Súper limpio, sin llamadas a la API)
+  const handleSearch = (searchTerm) => {
+    setCurrentQuery(searchTerm); // Le decimos a la app qué palabra buscar
+    setPage(1); // Volvemos a la página 1 siempre
+    setIsLoading(true); // Prendemos los Skeletons
+    setMovies([]); // Limpiamos la pantalla
   };
 
+  // 2. CEREBRO DE CARGA (El ÚNICO que se comunica con tmdb.js)
   useEffect(() => {
     const fetchMovies = async () => {
-      setIsLoading(true); //Prendemos la carga al entrar ala pagina
-      const peliculas = await getTrendingMovies();
-      setMovies(peliculas);
-      setIsLoading(false); //Apagamos la carga
+      // Si es página 1, usamos la carga principal. Si es página 2+, activamos el candado.
+      if (page === 1) setIsLoading(true);
+      else setIsFetchingMore(true);
+
+      let nuevosResultados = [];
+      // Si no hay búsqueda, trae tendencias. Si hay búsqueda, trae resultados.
+      if (currentQuery === "") {
+        nuevosResultados = await getTrendingMovies(page);
+      } else {
+        nuevosResultados = await searchMovies(currentQuery, page);
+      }
+
+      if (page === 1) {
+        // Página 1: Reemplaza todo
+        setMovies(nuevosResultados);
+        setIsLoading(false);
+      } else {
+        // Página 2 en adelante: Juntamos sin duplicados para evitar errores de React
+        setMovies((prevMovies) => {
+          const peliculasFiltradas = nuevosResultados.filter(
+            (nueva) => !prevMovies.some((prev) => prev.id === nueva.id),
+          );
+          return [...prevMovies, ...peliculasFiltradas];
+        });
+        setIsFetchingMore(false);
+      }
     };
+
     fetchMovies();
-  }, []);
+  }, [page, currentQuery]);
+
+  // 3. EL OJO DEL VIGILANTE (Intersection Observer API)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entradas) => {
+        // Solo pide más películas SI lo estamos viendo Y NO está cargando nada
+        if (entradas[0].isIntersecting && !isFetchingMore && !isLoading) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (vigilanteRef.current) {
+      observer.observe(vigilanteRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [movies, isFetchingMore, isLoading]); 
 
   const skeletons = Array(8).fill(0);
 
@@ -69,12 +114,29 @@ function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {/* Por cada película en la memoria, dibujamos un MovieCard */}
                   {/* Si esta cargando mostramos skeletons si no las peliculas */}
-                  {isLoading
+                  {isLoading && page === 1
                     ? skeletons.map((_, index) => <SkeletonCard key={index} />)
-                    : movies.map((pelicula) => (
-                        <MovieCard key={pelicula.id} movie={pelicula} />
+                    : movies.map((pelicula, index) => (
+                        <MovieCard
+                          key={`${pelicula.id}-${index}`}
+                          movie={pelicula}
+                        />
                       ))}
                 </div>
+
+                {/*VIGILANTE*/}
+                {!isLoading && (
+                  <div
+                    ref={vigilanteRef}
+                    className="h-10 w-full mt-10 flex justify-center items-center"
+                  >
+                    {isFetchingMore && (
+                      <span className="text-gray-500 animate-pulse text-lg font-semibold tracking-wider">
+                        Cargando más películas...
+                      </span>
+                    )}
+                  </div>
+                )}
               </main>
             }
           />
