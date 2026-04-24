@@ -2,9 +2,23 @@ import { useWatchList } from "../context/WatchlistContext";
 import MovieCard from "./MovieCard";
 import { Link } from "react-router-dom";
 import { HiHeart } from "react-icons/hi";
+import { SkeletonCard } from "./SkeletonCard";
+import { useState, useEffect } from "react";
 
 const Favorites = () => {
   const { watchList } = useWatchList();
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  const skeletons = Array(4).fill(0);
 
   return (
     <main className="p-6 mt-3 max-w-7xl mx-auto animation-aparecer min-h-[80vh]">
@@ -13,7 +27,13 @@ const Favorites = () => {
         Mi lista
       </h2>
 
-      {watchList.length === 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {skeletons.map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>      
+        ): watchList.length === 0 ? (
         //Si no hay pelis motivamos a buscar
         <div className="flex flex-col items-center justify-center mt-20 text-center">
           <p className="text-gray-400 text-xl mb-6">
