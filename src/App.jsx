@@ -23,7 +23,7 @@ function App() {
   //Vigilante
   const vigilanteRef = useRef(null);
 
-  // 1. MANEJADOR DE BÚSQUEDA (Súper limpio, sin llamadas a la API)
+  // 1. MANEJADOR DE BÚSQUEDA (limpio, sin llamadas a la API)
   const handleSearch = (searchTerm) => {
     setCurrentQuery(searchTerm); // Le decimos a la app qué palabra buscar
     setPage(1); // Volvemos a la página 1 siempre
@@ -31,7 +31,7 @@ function App() {
     setMovies([]); // Limpiamos la pantalla
   };
 
-  // 2. CEREBRO DE CARGA (El ÚNICO que se comunica con tmdb.js)
+  // 2. CEREBRO DE CARGA (Unico que se comunica con tmdb.js)
   useEffect(() => {
     const fetchMovies = async () => {
       // Si es página 1, usamos la carga principal. Si es página 2+, activamos el candado.
