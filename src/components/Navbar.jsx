@@ -1,6 +1,7 @@
 import { FiSearch } from "react-icons/fi";
 import logoImg from "../assets/StarHub_logo.png";
-import { useLocation } from "react-router-dom";
+import {Link, useLocation } from "react-router-dom";
+
 
 const Navbar = ({ onSearch }) => {
   const location = useLocation(); //leemos la url actual
@@ -19,14 +20,20 @@ const Navbar = ({ onSearch }) => {
           className="h-11 w-auto object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)] transition-transform hover:scale-105"
         />
       </div>
+      <div className="flex gap-6">
+        <Link
+          to="/"
+          className={`font-medium transition ${location.pathname === "/" ? "text-blue-400" : "text-gray-300 hover:text-white"}`}
+        >
+          Inicio
+        </Link>
 
-      {/* 2. SECCIÓN CENTRO: Link de Inicio */}
-      <div>
-        {isHome && (
-          <span className="text-gray-300 font-regular cursor-pointer hover:text-white transition">
-            Inicio
-          </span>
-        )}
+        <Link
+          to="/favorites"
+          className={`font-medium transition ${location.pathname === "/favorites" ? "text-red-400" : "text-gray-300 hover:text-white"}`}
+        >
+          Mi Lista
+        </Link>
       </div>
 
       {/* 3. SECCIÓN DERECHA: Buscador (Input blanco estilo píldora) */}

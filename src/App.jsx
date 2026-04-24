@@ -8,6 +8,7 @@ import { SkeletonCard } from "./components/SkeletonCard";
 import { getTrendingMovies } from "./tmdb";
 import { searchMovies } from "./tmdb";
 import { HiTrendingUp } from "react-icons/hi";
+import Favorites from "./components/Favorites";
 
 function App() {
   // Aquí guardaremos la lista de películas. Empieza como un arreglo vacío [].
@@ -143,6 +144,9 @@ function App() {
           {/* Contenido si la ruta es: Ruta 2:Los detalles de la pelicula */}
           {/* El: id es un comodin significa que puede ser /movie/123 o /movie/999 */}
           <Route path="/movie/:id" element={<MovieDetails />} />
+
+          {/* Ruta para favoritos */}
+          <Route path="/favorites" element={<Favorites/>}/>
         </Routes>
       </div>
     </div>
